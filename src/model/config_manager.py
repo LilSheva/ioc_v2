@@ -1,7 +1,21 @@
 import json
+import sys
 from pathlib import Path
 
-CONFIG_FILE = Path(__file__).parent.parent.parent / "config.txt"
+def get_base_path():
+    """
+    Определяет базовый путь для файлов (конфига),
+    корректно работая и в обычном режиме, и в скомпилированном .exe.
+    """
+    if getattr(sys, 'frozen', False):
+        # Если приложение "заморожено" (скомпилировано в .exe)
+        return Path(sys.executable).parent
+    else:
+        # Если это обычный запуск .py скрипта
+        return Path(__file__).parent.parent.parent
+
+# Определяем путь к файлу конфигурации
+CONFIG_FILE = get_base_path() / "config.txt"
 
 class ConfigManager:
     def __init__(self):
@@ -35,4 +49,5 @@ class ConfigManager:
         }
         self.config_data = default_config
         self.save()
+
         return self.config_data
